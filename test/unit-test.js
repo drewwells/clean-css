@@ -9,14 +9,14 @@ var cssContext = function(groups) {
       assert.equal(cleanCSS.process(css), cleanedCSS);
     }
   };
-  
+
   for (var g in groups) {
     var transformation = groups[g];
     if (typeof transformation == 'string') transformation = [transformation, transformation];
     if (!transformation[0].push) {
       transformation = [[transformation[0], transformation[1]]];
     }
-    
+
     for (var i = 0, c = transformation.length; i < c; i++) {
       context[g + ' #' + (i + 1)] = {
         topic: transformation[i][0],
@@ -24,7 +24,7 @@ var cssContext = function(groups) {
       };
     }
   }
-  
+
   return context;
 };
 
@@ -164,7 +164,11 @@ vows.describe('clean-units').addBatch({
     ]
   }),
   'text content': cssContext({
-    'normal': 'a{content:"."}',
+    'normal #1': 'a{content:"."}',
+    'normal #2': [
+      'a:before{content : "test\'s test"; }',
+      'a:before{content:"test\'s test"}'
+    ],
     'open quote': [
       'a{content : open-quote;opacity:1}',
       'a{content:open-quote;opacity:1}'
