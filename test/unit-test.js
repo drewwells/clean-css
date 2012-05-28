@@ -2,11 +2,11 @@ var vows = require('vows'),
   assert = require('assert'),
   cleanCSS = require('../index');
 
-var cssContext = function(groups) {
+var cssContext = function(groups, options) {
   var context = {};
   var clean = function(cleanedCSS) {
     return function(css) {
-      assert.equal(cleanCSS.process(css), cleanedCSS);
+      assert.equal(cleanCSS.process(css, options), cleanedCSS);
     }
   };
 
@@ -94,20 +94,6 @@ vows.describe('clean-units').addBatch({
     'not inside calc method with multiplication': [
       'div{height:-moz-calc(3 * 2em + 10px)}',
       'div{height:-moz-calc(3 * 2em + 10px)}'
-    ]
-  }),
-  'empty elements': cssContext({
-    'single': [
-      ' div p {  \n}',
-      ''
-    ],
-    'between non-empty': [
-      'div {color:#fff}  a{  } p{  line-height:1.35em}',
-      'div{color:#fff}p{line-height:1.35em}'
-    ],
-    'just a semicolon': [
-      'div { ; }',
-      ''
     ]
   }),
   'selectors': cssContext({
@@ -307,5 +293,25 @@ vows.describe('clean-units').addBatch({
       "body{background-color:#fff  !important}",
       "body{background-color:#fff!important}"
     ]
+  }),
+  'empty elements': cssContext({
+    'single': [
+      ' div p {  \n}',
+      ''
+    ],
+    'between non-empty': [
+      'div {color:#fff}  a{  } p{  line-height:1.35em}',
+      'div{color:#fff}p{line-height:1.35em}'
+    ],
+    'just a semicolon': [
+      'div { ; }',
+      ''
+    ]
+  }, { removeEmpty: true }),
+  'skip empty elements': cssContext({
+    'empty #1': 'a{}',
+    'empty #2': 'div>a{}',
+    'empty #3': 'div:nth-child(2n){}',
+    'empty #3': 'a{color:#fff}div{}p{line-height:2em}'
   })
 }).export(module);
